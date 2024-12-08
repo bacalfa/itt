@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Image-to-Text Captioning</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+<body>
+<h1 style="color:green;">Image-to-Text Captioning Demo</h1>
+<form>
+    <input type="file" id="imageUpload" accept="image/*">
+    <img id="preview" src="#" alt="Image Preview" style="display:none;" width="500" height="600"/>
+    <p id="questionInput" class="beforeSubmit" hidden>
+        <label for="imageQuestion">Type a question about the image (optional):</label>
+        <input type="text" id="imageQuestion" size="50">
+    </p>
+    <input type="button" id="submitButton" value="Get Caption!" class="beforeSubmit" hidden>
+    <input type="text" id="imageCaption" class="afterSubmit" size="50" hidden>
+    <script src="/static/form.js"></script>
+</form>
+</body>
+
+</html>
