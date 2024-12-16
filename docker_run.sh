@@ -1,0 +1,1 @@
+docker run --rm -v `{PWD}`/model_repository_python:/models itt
