@@ -31,6 +31,16 @@ def index():
     return render_template("index.html")
 
 
+def extract_answer_from_output(question: str, output: str) -> str:
+    output = output.replace(" ' ", "'")  # Remove extra spaces around apostrophe
+    if output.lower().startswith(question.lower()):
+        output = output[len(question):].strip()
+    else:
+        output = output.strip()
+
+    return output
+
+
 @app.route("/infer", methods=["POST"])
 def infer():
     data = request.get_json()
@@ -38,6 +48,8 @@ def infer():
     if data["question"] is not None:
         mm.ModelName = model_manager.ITTModelName.GITVQA
     generated_caption = mm.infer(img=read_base64_image(data["img"]), question=data["question"])
+    if data["question"] is not None:
+        generated_caption = extract_answer_from_output(data["question"], generated_caption)
     return jsonify(result=generated_caption)
 
 

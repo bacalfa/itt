@@ -22,7 +22,7 @@ class TritonPythonModel:
     def execute(self, requests):
         responses = []
         for request in requests:
-            # Decode the Byte Tensor into Text
+            # Convert Tensor to PIL Image
             image = pb_utils.get_input_tensor_by_name(request, "image")
             logger.debug(f"1 image type {type(image)}")
             image = image.as_numpy() * 255.0
@@ -30,7 +30,7 @@ class TritonPythonModel:
             logger.debug(f"2 image shape {image.shape}")
             image = PIL.Image.fromarray(image.astype(np.uint8))
             logger.debug(f"3 image type {type(image)}")
-            logger.debug(f"3 image type {image.size}")
+            logger.debug(f"3 image size {image.size}")
 
             # Call the Model pipeline
             pipeline_output = self.generator(image)

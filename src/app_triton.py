@@ -39,6 +39,16 @@ def index():
     return render_template("index.html")
 
 
+def extract_answer_from_output(question: str, output: str) -> str:
+    output = output.replace(" ' ", "'")  # Remove extra spaces around apostrophe
+    if output.lower().startswith(question.lower()):
+        output = output[len(question):].strip()
+    else:
+        output = output.strip()
+
+    return output
+
+
 @app.route("/infer", methods=["POST"])
 def infer():
     logger.debug("Inside infer")
@@ -51,6 +61,11 @@ def infer():
         tritonclient.InferInput("image", image.shape, "FP32"),
     ]
     inputs[0].set_data_from_numpy(image.astype(np.float32))
+    if data["question"] is not None:
+        question_array = np.array([data["question"].encode("UTF-8")], dtype=np.bytes_)
+        logger.debug(f"Question shape {question_array.shape}")
+        inputs.append(tritonclient.InferInput("question", question_array.shape, "BYTES"))
+        inputs[-1].set_data_from_numpy(question_array)
 
     # # Define callback for asynchronous inference
     # def callback(user_data, result, error):
@@ -61,6 +76,8 @@ def infer():
 
     # Send request to Triton server
     model_name = model_manager_triton.ITTModelName.GIT.name.lower()
+    if data["question"] is not None:
+        model_name = model_manager_triton.ITTModelName.GITVQA.name.lower()
     # url = "triton:8000"
     url = "triton:8001"
     model_version = "1"
@@ -77,6 +94,8 @@ def infer():
 
     # Process response from Triton
     generated_caption = response.as_numpy(output_name)[0].decode("UTF-8")
+    if data["question"] is not None:
+        generated_caption = extract_answer_from_output(data["question"], generated_caption)
     logger.debug(f"Extracted output {generated_caption}")
     return jsonify(result=generated_caption)
 
