@@ -1,6 +1,11 @@
 # our base image
 FROM continuumio/miniconda3
 
+RUN apt-get update \
+  && apt-get install -y build-essential \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
+
 # Create the environment:
 COPY environment.yml /usr/src/app/
 RUN conda env create -f /usr/src/app/environment.yml
@@ -19,4 +24,6 @@ COPY src /usr/src/app/
 EXPOSE 5000
 
 # run the application
-ENTRYPOINT ["conda", "run", "--no-capture-output", "-n", "itt", "python", "/usr/src/app/app.py"]
+ENV FLASK_ENV=development
+ENV FLASK_DEBUG=1
+ENTRYPOINT ["conda", "run", "--no-capture-output", "-n", "itt", "python", "/usr/src/app/app_triton.py"]
