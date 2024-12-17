@@ -7,6 +7,10 @@ $('#imageUpload').on('change', function () {
         $('#preview').attr('src', base64String);
         $('#preview').css('display', 'block');
         //console.log(base64String);
+        let img = new Image();
+        img.src = base64String;
+        let aspectRatio = img.width / img.height;
+        $('#preview').attr('height', Math.round(parseFloat($('#preview').attr('height')) / aspectRatio));
     };
 
     reader.readAsDataURL(file);
@@ -14,6 +18,9 @@ $('#imageUpload').on('change', function () {
     $('.beforeSubmit').each((i, e) => {
         e.hidden = false;
     });
+
+    $('#imageCaption').val('');
+    $('#imageQuestion').val('');
 });
 
 $("#submitButton").on("click", function() {

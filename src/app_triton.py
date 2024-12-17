@@ -76,8 +76,7 @@ def infer():
         logger.debug(f"Results {response.get_response()}")
 
     # Process response from Triton
-    result = response.get_response()
-    generated_caption = result.raw_output_contents[0].decode("UTF-8")
+    generated_caption = response.as_numpy(output_name)[0].decode("UTF-8")
     logger.debug(f"Extracted output {generated_caption}")
     return jsonify(result=generated_caption)
 

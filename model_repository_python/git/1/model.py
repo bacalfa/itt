@@ -14,6 +14,7 @@ h2.setLevel(logging.DEBUG)
 logger.addHandler(h1)
 logger.addHandler(h2)
 
+
 class TritonPythonModel:
     def initialize(self, args):
         self.generator = pipeline("image-to-text", model="microsoft/git-base-coco")
