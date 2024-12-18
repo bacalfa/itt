@@ -1,0 +1,1 @@
+docker compose -f compose_python.yaml up --build

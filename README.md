@@ -7,8 +7,8 @@ Simple front-end graphical user interface (HTML and jQuery) to interact with bac
   - Run file `src/app.py`
   - Open web browser
   - Navigate to http://localhost:5000/
-- Running with Triton Inference Server
-  - Create Docker images by running file `docker_compose.sh`
+- Running with Triton Inference Server (Python backend)
+  - Create Docker images by running file `docker_compose_python.sh`
   - Open web browser
   - Navigate to http://localhost:5000/
 

@@ -26,4 +26,4 @@ EXPOSE 5000
 # run the application
 ENV FLASK_ENV=development
 ENV FLASK_DEBUG=1
-ENTRYPOINT ["conda", "run", "--no-capture-output", "-n", "itt", "python", "/usr/src/app/app_triton.py"]
+ENTRYPOINT ["conda", "run", "--no-capture-output", "-n", "itt", "python", "/usr/src/app/app_triton_python.py"]

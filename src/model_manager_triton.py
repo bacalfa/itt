@@ -1,12 +1,6 @@
 import torch
-from transformers import (
-    AutoModelForCausalLM,
-    AutoProcessor,
-    VisionEncoderDecoderModel,
-    ViTImageProcessor,
-    AutoTokenizer,
-)
-from typing import Optional, Callable, Union
+import model_manager
+from typing import Union
 import numpy as np
 import PIL
 import enum
@@ -22,46 +16,26 @@ class ITTModelName(enum.StrEnum):
 
 
 class ModelManager:
-    def __init__(self, model_name: str = ITTModelName.GIT):
-        self._model_name: str = model_name
-        self._model = None
-        self._init_model()
-
-    def _init_model(self):
-        if self._model_name == ITTModelName.GIT:
-            self._model = GIT()
-        elif self._model_name == ITTModelName.GITVQA:
-            self._model = GIT(with_question=True)
-        elif self._model_name == ITTModelName.ViTGPT2:
-            self._model = ViTGPT2()
-
-    @property
-    def ModelName(self) -> str:
-        return self._model_name
-
-    @ModelName.setter
-    def ModelName(self, model_name: str):
-        self._model_name = model_name
-        self._init_model()
-
-    def infer(self, img: Union[np.ndarray, PIL.Image.Image], question: str = None) -> str:
-        return self._model.infer(img, question)
-
     @staticmethod
     def create_model_repository():
+        #TODO: This approach does not work because converting these generative models to ONNX engine doesn't seem to be
+        # supported. ONNX model is needed before converting to the final TensorRT engine.
         for itt_model in ITTModelName:
             has_question = False
             if itt_model == ITTModelName.GIT:
-                model = GIT()
+                model = model_manager.GIT()
             elif itt_model == ITTModelName.GITVQA:
-                model = GIT(with_question=True)
+                model = model_manager.GIT(with_question=True)
                 has_question = True
             elif itt_model == ITTModelName.ViTGPT2:
-                model = ViTGPT2()
+                model = model_manager.ViTGPT2()
+
+            from transformers import AutoModelForVision2Seq
+            model.model = AutoModelForVision2Seq.from_pretrained(ITTModelName.GIT).to(device)
 
             height = model.processor.current_processor.crop_size["height"]
             width = model.processor.current_processor.crop_size["width"]
-            dummy_input = torch.rand(3, height, width)
+            dummy_input = torch.rand(1, 3, height, width)
             pixel_values = model.processor(images=dummy_input, return_tensors="pt").pixel_values.to(device)
             if has_question:
                 question = "What does the image show?"
